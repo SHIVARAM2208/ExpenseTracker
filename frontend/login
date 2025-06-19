@@ -12,10 +12,10 @@ const LoginPage = ({ onLogin }) => {
       return;
     }
 
-    // Replace with real auth logic or API call
+   
     console.log("Logging in with", { email, password });
 
-    // Simulate login success
+    
     onLogin(email);
   };
 
