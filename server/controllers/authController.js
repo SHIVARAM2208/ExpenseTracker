@@ -22,9 +22,7 @@ exports.register = async (req, res, next) => {
     });
 
     // Create token
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: process.env.JWT_EXPIRE || '30d',
-    });
+   req.session.userId = user._id;
 
     res.status(201).json({
       success: true,
