@@ -1,33 +1,31 @@
-const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-// Protect routes
+// Protect routes using sessions
 exports.protect = async (req, res, next) => {
-  let token;
-
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer')
-  ) {
-    token = req.headers.authorization.split(' ')[1];
-  }
-
-  if (!token) {
+  // Check if session exists and has userId
+  if (!req.session || !req.session.userId) {
     return res.status(401).json({
       success: false,
-      message: 'Not authorized to access this route',
+      message: 'Not authorized - please log in',
     });
   }
 
   try {
-    // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = await User.findById(decoded.id);
+    // Attach user to request object
+    req.user = await User.findById(req.session.userId);
+    
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: 'User no longer exists',
+      });
+    }
+    
     next();
   } catch (err) {
     return res.status(401).json({
       success: false,
-      message: 'Not authorized to access this route',
+      message: 'Session invalid',
     });
   }
 };
